@@ -1,0 +1,51 @@
+= include_stylesheets :sent_emails
+
+- @page_title = @resource.title
+
+- content_for :header do
+  = link_to(content_tag(:span, 'Back'), :back, :class => 'right back button')
+
+%container.inset
+  %legend
+    User
+  .inline.form_field
+    %label ID
+    = link_to_if(can?(:update, @resource.user), @resource.user_id, admin_resource_path(@resource.user_id))
+  .inline.form_field
+    %label Username
+    = @resource.user.username
+  .inline.form_field
+    %label Full name
+    = @resource.user.full_name
+
+%container.inset
+  -booking = @resource.booking
+  %legend
+    Session
+  .inline.form_field
+    %label ID
+    = link_to_if(can?(:read, booking), booking.id, admin_booking_path(:id => booking.id))
+  .inline.form_field
+    %label Location
+    = booking.venue_tbd? ? booking.venue.address.city_province_country : booking.venue.location
+  .inline.form_field
+    %label Start time
+    = l(booking.start_datetime, :format => :long)
+  .inline.form_field
+    %label End time
+    = l(booking.end_datetime, :format => :long)
+
+%container.inset
+  %legend
+    Status
+  .inline.form_field
+    %label Result
+    = @resource.verbose_result
+  .inline.form_field
+    %label Attendance
+    = @resource.attendance_status_text
+  - if can?(:read, :student_mark)
+    .inline.form_field
+      %label Mark
+      = number_to_percentage(@resource.mark, :precision => 4)
+= render(:partial => 'admin/partials/messages', :collection => @resource.messages)
